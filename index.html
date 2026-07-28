@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موسوعة الأسماء | بلمسة رندة زربا</title>
+    
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e1065">
+    
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas لمشاركة البطاقة كصورة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -18,11 +26,52 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 15px;
+            padding: 20px 15px;
             min-height: 100vh;
             margin: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* خلفية النجوم التفاعلية Canvas */
+        #starsCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
             background: radial-gradient(circle at top, #2e1065 0%, #0d1117 100%);
         }
+
+        /* شريط تثبيت التطبيق PWA */
+        .pwa-banner {
+            display: none;
+            background: linear-gradient(90deg, #d946ef, #8b5cf6);
+            color: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(217, 70, 239, 0.4);
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .pwa-btn {
+            background: white;
+            color: #2e1065;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
         .header-tag {
             background: rgba(217, 70, 239, 0.15);
             color: #f0abfc;
@@ -36,8 +85,8 @@
         }
         h1 { 
             color: #ffffff; 
-            margin: 0 0 25px 0; 
-            font-size: 2.1rem;
+            margin: 0 0 20px 0; 
+            font-size: 2rem;
             text-align: center;
             font-weight: 900;
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
@@ -47,33 +96,64 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        /* أزرار التبويب (كشف اسم / كاشف التوافق) */
+        .tab-switch {
+            display: flex;
+            background: rgba(22, 27, 34, 0.9);
+            border-radius: 16px;
+            padding: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #8b949e;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d946ef, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
+        }
+
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             width: 100%;
             max-width: 500px;
-            background: rgba(22, 27, 34, 0.95);
+            background: rgba(22, 27, 34, 0.9);
             padding: 8px;
             border-radius: 16px;
             border: 1px solid rgba(217, 70, 239, 0.3);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
         }
+        .search-box.double-input {
+            flex-direction: column;
+        }
         input {
             flex: 1;
-            padding: 14px 16px;
+            padding: 12px 16px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(13, 17, 23, 0.8);
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             outline: none;
             font-family: inherit;
         }
-        input:focus {
-            border-color: #d946ef;
-        }
+        input:focus { border-color: #d946ef; }
         input::placeholder { color: #8b949e; }
         button.btn-search {
             padding: 12px 24px;
@@ -82,7 +162,7 @@
             background: linear-gradient(135deg, #d946ef, #8b5cf6);
             color: white;
             font-weight: bold;
-            font-size: 1.05rem;
+            font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
             white-space: nowrap;
@@ -91,6 +171,7 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(217, 70, 239, 0.5);
         }
+
         .loader {
             display: none;
             color: #f472b6;
@@ -98,10 +179,12 @@
             font-weight: bold;
             font-size: 1.1rem;
         }
+
+        /* البطاقة الرئيسية */
         .card {
-            background: rgba(22, 27, 34, 0.85);
+            background: rgba(22, 27, 34, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 28px;
+            padding: 25px;
             border-radius: 20px;
             width: 100%;
             max-width: 500px;
@@ -109,19 +192,20 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             backdrop-filter: blur(12px);
             animation: fadeIn 0.4s ease-out;
+            position: relative;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .title { color: #f472b6; font-size: 2.2rem; font-weight: 900; margin-bottom: 4px; }
-        .badge { color: #a78bfa; font-size: 0.9rem; margin-bottom: 18px; font-weight: bold; }
-        .desc { color: #e2e8f0; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px; }
+        .title { color: #f472b6; font-size: 2rem; font-weight: 900; margin-bottom: 4px; }
+        .badge { color: #a78bfa; font-size: 0.9rem; margin-bottom: 16px; font-weight: bold; }
+        .desc { color: #e2e8f0; line-height: 1.8; font-size: 1rem; margin-bottom: 18px; }
         
         .randa-box {
             background: linear-gradient(135deg, rgba(217, 70, 239, 0.12), rgba(139, 92, 246, 0.12));
             border-right: 4px solid #d946ef;
-            padding: 16px 18px;
+            padding: 14px 16px;
             border-radius: 12px;
             margin-top: 15px;
             border-top: 1px solid rgba(217, 70, 239, 0.2);
@@ -129,31 +213,47 @@
         .randa-title { 
             color: #f472b6; 
             font-weight: 900; 
-            font-size: 1.05rem;
+            font-size: 1rem;
             margin-bottom: 8px; 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
+            gap: 8px; 
         }
-        .randa-desc { color: #ffffff; line-height: 1.7; font-size: 1rem; font-weight: 500; }
+        .randa-desc { color: #ffffff; line-height: 1.7; font-size: 0.98rem; font-weight: 500; }
 
-        .randa-btn {
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
+        /* أزرار المشاركة والتحكم */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
         }
-        .randa-btn:hover {
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .action-btn:hover {
             background: rgba(217, 70, 239, 0.2);
             color: #fff;
             border-color: #d946ef;
         }
+        .action-btn.share-btn {
+            background: linear-gradient(135deg, rgba(217,70,239,0.2), rgba(139,92,246,0.2));
+            border-color: rgba(217,70,239,0.4);
+            color: #f0abfc;
+        }
+
         .edit-area {
             display: none;
             margin-top: 12px;
@@ -161,11 +261,11 @@
         }
         .edit-area textarea {
             width: 100%;
-            height: 90px;
+            height: 85px;
             background: #0d1117;
             border: 1px solid #d946ef;
             color: white;
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             font-family: inherit;
             font-size: 0.95rem;
@@ -174,13 +274,14 @@
         }
         .btn-save {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             border: none;
             background: #d946ef;
             color: white;
             font-weight: bold;
             cursor: pointer;
+            font-family: inherit;
         }
     </style>
 
@@ -190,16 +291,40 @@
 </head>
 <body>
 
+    <!-- خلفية النجوم المتحركة -->
+    <canvas id="starsCanvas"></canvas>
+
+    <!-- شريط تنزيل PWA -->
+    <div class="pwa-banner" id="pwaBanner">
+        <span><i class="fa-solid fa-mobile-screen-button"></i> تنزيل التطبيق على الجوال</span>
+        <button class="pwa-btn" id="installPwaBtn">تثبيت الآن</button>
+    </div>
+
     <div class="header-tag"><i class="fa-solid fa-crown"></i> الإصدار الخاص المعتمد</div>
     <h1>موسوعة الأسماء <span>بلمسة رندة زربا</span> ✨</h1>
 
-    <div class="search-box">
-        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثل: هاشم، وعد، نوال)..." onkeyup="if(event.key === 'Enter') searchName()">
+    <!-- تبويبات كشف اسم / كاشف التوافق -->
+    <div class="tab-switch">
+        <button class="tab-btn active" id="tabSingle" onclick="switchTab('single')"><i class="fa-solid fa-magnifying-glass"></i> كشف اسم</button>
+        <button class="tab-btn" id="tabDouble" onclick="switchTab('double')"><i class="fa-solid fa-heart"></i> كاشف التوافق</button>
+    </div>
+
+    <!-- صندوق البحث عن اسم فردي -->
+    <div class="search-box" id="singleBox">
+        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، نوال)..." onkeyup="if(event.key === 'Enter') searchName()">
         <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
+    </div>
+
+    <!-- صندوق كاشف التوافق -->
+    <div class="search-box double-input" id="doubleBox" style="display: none;">
+        <input type="text" id="firstNameInput" placeholder="الاسم الأول (مثال: محمد)...">
+        <input type="text" id="secondNameInput" placeholder="الاسم الثاني (مثال: رندة)..." onkeyup="if(event.key === 'Enter') checkCompatibility()">
+        <button class="btn-search" onclick="checkCompatibility()"><i class="fa-solid fa-heart-circle-check"></i> فحص التوافق</button>
     </div>
 
     <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري استحضار التحليل واللمسة المخصصة...</div>
 
+    <!-- بطاقة العرض -->
     <div class="card" id="card">
         <div class="title" id="nameTitle">-</div>
         <div class="badge" id="nameOrigin">-</div>
@@ -210,7 +335,10 @@
             <div class="randa-desc" id="funnyText">-</div>
         </div>
 
-        <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-user-gear"></i> لوحة التحكم الخاصة بـ رندة زربا</button>
+        <div class="card-actions">
+            <button class="action-btn share-btn" onclick="shareCardAsImage()"><i class="fa-solid fa-share-nodes"></i> مشاركة البطاقة</button>
+            <button class="action-btn" onclick="openRandaEditor()"><i class="fa-solid fa-user-gear"></i> لوحة رندة</button>
+        </div>
         
         <div class="edit-area" id="editArea">
             <textarea id="randaInput" placeholder="اكتبي التحليل الفكاهي أو بصمتك المخصصة لهذا الاسم..."></textarea>
@@ -219,6 +347,7 @@
     </div>
 
     <script>
+        // --- تهيئة Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyAD9NWqGXT1Iewyc8947i6_OJ_MXnPp0EH4",
             authDomain: "randa-names.firebaseapp.com",
@@ -228,13 +357,14 @@
             appId: "1:282324926770:web:666ef9be9b07692610972b",
             databaseURL: "https://randa-names-default-rtdb.firebaseio.com"
         };
-
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         let db = {};
         let currentSearchName = "";
+        let currentMode = "single";
 
+        // قاموس أولي لمعاني الأسماء
         const defaultMeanings = {
             "هاشم": "اسم علم عربي مذكر، يعني الكاسر أو الهشام الذي يكسر الخبز ليطعم غيره، وهو يدل على الكرم الشديد والجود والشهامة.",
             "وعد": "اسم علم عربي مؤنث، يعني الالتزام والعهد والوفاء بالذمة والصراحة في التعامل والعهد بالخير.",
@@ -259,6 +389,24 @@
             return txt.value;
         }
 
+        // --- التبديل بين كشف اسم وكاشف التوافق ---
+        function switchTab(mode) {
+            currentMode = mode;
+            document.getElementById('card').style.display = 'none';
+            if (mode === 'single') {
+                document.getElementById('tabSingle').classList.add('active');
+                document.getElementById('tabDouble').classList.remove('active');
+                document.getElementById('singleBox').style.display = 'flex';
+                document.getElementById('doubleBox').style.display = 'none';
+            } else {
+                document.getElementById('tabDouble').classList.add('active');
+                document.getElementById('tabSingle').classList.remove('active');
+                document.getElementById('doubleBox').style.display = 'flex';
+                document.getElementById('singleBox').style.display = 'none';
+            }
+        }
+
+        // --- البحث المباشر وتصفية السياسيين ---
         async function searchName() {
             const rawInput = document.getElementById('nameInput').value.trim();
             const card = document.getElementById('card');
@@ -336,6 +484,30 @@
             });
         }
 
+        // --- كاشف التوافق بين شخصين ---
+        function checkCompatibility() {
+            const name1 = document.getElementById('firstNameInput').value.trim();
+            const name2 = document.getElementById('secondNameInput').value.trim();
+            if (!name1 || !name2) return;
+
+            document.getElementById('card').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+
+            setTimeout(() => {
+                const totalLength = name1.length + name2.length;
+                const score = 80 + (totalLength * 3) % 21; // نتيجة بين 80% و 100%
+
+                document.getElementById('nameTitle').innerText = `${name1} ❤️ ${name2}`;
+                document.getElementById('nameOrigin').innerText = `نسبة التوافق الروحي: ${score}%`;
+                document.getElementById('nameMeaning').innerText = `توافق جميل جداً يجمعهما الاحترام والانسجام المتبادل، وتفاهم عالي في المواقف والقرارات!`;
+                document.getElementById('funnyText').innerText = `تحليل رندة: ${name1} و ${name2} ثنائي متناغم جداً، العلاقة بدها شوية موازنة بالعصبية والأمور الباقية مية بالمية!`;
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('card').style.display = 'block';
+            }, 600);
+        }
+
+        // --- لوحة التحكم والتعديل بكلمة السر ---
         function openRandaEditor() {
             const pin = prompt("أدخلي الرمز السري الخاص بـ رندة زربا:");
             if (pin === "2012") {
@@ -359,6 +531,82 @@
                 alert("خطأ بالحفظ: تأكد من تفعيل Realtime Database");
             });
         }
+
+        // --- مشاركة البطاقة كصورة ---
+        function shareCardAsImage() {
+            const cardElement = document.getElementById('card');
+            html2canvas(cardElement, { backgroundColor: '#161b22' }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const file = new File([blob], `${currentSearchName || 'تحليل_الاسم'}.png`, { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: 'موسوعة الأسماء - رندة زربا',
+                            text: 'شوف كشف وتحليل هذا الاسم بلمسة رندة زربا! ✨'
+                        });
+                    } else {
+                        const link = document.createElement('a');
+                        link.download = `${currentSearchName || 'card'}.png`;
+                        link.href = canvas.toDataURL();
+                        link.click();
+                    }
+                });
+            });
+        }
+
+        // --- خلفية النجوم والتفاعلية ---
+        const canvas = document.getElementById('starsCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        for (let i = 0; i < 70; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.8 + 0.5,
+                alpha: Math.random(),
+                speed: Math.random() * 0.02 + 0.005
+            });
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+                ctx.fillStyle = `rgba(244, 114, 182, ${Math.abs(star.alpha)})`;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // --- دعم PWA التثبيت ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaBanner').style.display = 'flex';
+        });
+
+        document.getElementById('installPwaBtn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('pwaBanner').style.display = 'none';
+                    deferredPrompt = null;
+                });
+            }
+        });
     </script>
 </body>
 </html>
