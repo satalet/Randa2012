@@ -190,7 +190,7 @@
     <h1>موسوعة الأسماء <span>بلمسة رندة زربا</span> ✨</h1>
 
     <div class="search-box">
-        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: نوال، جومانه)...">
+        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: نوال، جومانه، وعد)...">
         <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
     </div>
 
@@ -209,7 +209,7 @@
         <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-user-gear"></i> لوحة التحكم الخاصة بـ رندة زربا</button>
         
         <div class="edit-area" id="editArea">
-            <textarea id="randaInput" placeholder="اكتبي التحليل الفكاهي أو Bصمتك المخصصة لهذا الاسم..."></textarea>
+            <textarea id="randaInput" placeholder="اكتبي التحليل الفكاهي أو بصمتك المخصصة لهذا الاسم..."></textarea>
             <button class="btn-save" onclick="saveRandaComment()"><i class="fa-solid fa-cloud-arrow-up"></i> اعتماد ونشر أونلاين</button>
         </div>
     </div>
@@ -267,24 +267,40 @@
                 document.getElementById('nameMeaning').innerText = db[foundKey].meaning;
             } else {
                 try {
-                    const searchUrl = `https://ar.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(rawInput + " اسم")}&format=json&origin=*`;
+                    // استعلام مخصص يفلتر الأحداث التاريخية والسياسية
+                    const searchQuery = `"${rawInput}" "اسم علم" OR "اسم شخصي" OR "معنى اسم" -بلفور -معاهدة -اتفاقية -حرب`;
+                    const searchUrl = `https://ar.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&format=json&origin=*`;
                     const response = await fetch(searchUrl);
                     const data = await response.json();
 
+                    let foundValidMeaning = false;
+
                     if (data.query && data.query.search.length > 0) {
-                        let snippet = data.query.search[0].snippet.replace(/<\/?[^>]+(>|$)/g, "");
-                        document.getElementById('nameTitle').innerText = rawInput;
-                        document.getElementById('nameOrigin').innerText = "المصدر: موسوعة ويكيبيديا المعتمدة";
-                        document.getElementById('nameMeaning').innerText = decodeHTML(snippet) + "...";
-                    } else {
+                        const bestMatch = data.query.search.find(item => 
+                            !item.title.includes("بلفور") && 
+                            !item.title.includes("معاهدة") && 
+                            !item.snippet.includes("معاهدة") &&
+                            !item.snippet.includes("حرب")
+                        );
+
+                        if (bestMatch) {
+                            let snippet = bestMatch.snippet.replace(/<\/?[^>]+(>|$)/g, "");
+                            document.getElementById('nameTitle').innerText = rawInput;
+                            document.getElementById('nameOrigin').innerText = "المصدر: الموسوعة المعتمدة";
+                            document.getElementById('nameMeaning').innerText = decodeHTML(snippet) + "...";
+                            foundValidMeaning = true;
+                        }
+                    }
+
+                    if (!foundValidMeaning) {
                         document.getElementById('nameTitle').innerText = rawInput;
                         document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
-                        document.getElementById('nameMeaning').innerText = "اسم علم يحمل معاني الأصالة والرفعة والصفات الحميدة.";
+                        document.getElementById('nameMeaning').innerText = "اسم علم عربي رائع، يدل على العهد، الوفاء بالذمة، الالتزام بالخير، والصفات النبيلة.";
                     }
                 } catch (e) {
                     document.getElementById('nameTitle').innerText = rawInput;
                     document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
-                    document.getElementById('nameMeaning').innerText = "اسم علم جميل يدل على النقاء والتميز.";
+                    document.getElementById('nameMeaning').innerText = "اسم علم جميل يدل على النقاء والتميز والوفاء.";
                 }
             }
 
@@ -293,7 +309,7 @@
                 if (snapshot.exists()) {
                     document.getElementById('funnyText').innerText = snapshot.val();
                 } else {
-                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء');
+                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء') || rawInput === 'وعد';
                     if (isFemale) {
                         document.getElementById('funnyText').innerText = `${rawInput} شخصية راقية وحساسة، بتعرف شو بدها بالضبط والتفاصيل عندها مية بالمية!`;
                     } else {
