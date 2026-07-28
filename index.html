@@ -3,112 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Randa Names Hub | عالم الأسماء مع رندة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>موسوعة الأسماء | بلمسة رندة زربا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
         body {
-            background-color: #0b0f19;
-            color: #f8fafc;
+            background-color: #0d1117;
+            color: #f0f6fc;
             font-family: 'Tajawal', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 15px;
+            padding: 40px 15px;
             min-height: 100vh;
             margin: 0;
-            background: radial-gradient(circle at top, #1e1b4b 0%, #0b0f19 100%);
+            background: radial-gradient(circle at top, #2e1065 0%, #0d1117 100%);
+        }
+        .header-tag {
+            background: rgba(217, 70, 239, 0.15);
+            color: #f0abfc;
+            border: 1px solid rgba(217, 70, 239, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
         h1 { 
-            color: #f472b6; 
-            margin-bottom: 20px; 
+            color: #ffffff; 
+            margin: 0 0 25px 0; 
             font-size: 2.2rem;
             text-align: center;
             font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
-        .box {
+        h1 span {
+            background: linear-gradient(135deg, #f472b6, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
         }
         input {
             flex: 1;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 2px solid #334155;
-            background: #1e293b;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-        input:focus { border-color: #a855f7; }
-        button {
-            padding: 12px 20px;
+            padding: 12px 16px;
             border-radius: 12px;
             border: none;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
+            background: transparent;
+            color: white;
+            font-size: 1.05rem;
+            outline: none;
+            font-family: inherit;
+        }
+        input::placeholder { color: #8b949e; }
+        button.btn-search {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #d946ef, #8b5cf6);
             color: white;
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
+        }
+        button.btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(217, 70, 239, 0.5);
         }
         .loader {
             display: none;
-            color: #ec4899;
-            margin-bottom: 15px;
+            color: #f472b6;
+            margin-bottom: 20px;
             font-weight: bold;
+            font-size: 1.1rem;
         }
         .card {
-            background: #151d30;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 24px;
-            border-radius: 16px;
+            background: rgba(22, 27, 34, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 28px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             display: none;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px);
+            animation: fadeIn 0.4s ease-out;
         }
-        .title { color: #ec4899; font-size: 2rem; font-weight: 900; margin-bottom: 5px; }
-        .badge { color: #c084fc; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold; }
-        .desc { color: #cbd5e1; line-height: 1.7; font-size: 1rem; margin-bottom: 15px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .title { color: #f472b6; font-size: 2.2rem; font-weight: 900; margin-bottom: 4px; }
+        .badge { color: #a78bfa; font-size: 0.9rem; margin-bottom: 18px; font-weight: bold; }
+        .desc { color: #e2e8f0; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px; }
         
-        .funny-box {
-            background: rgba(236, 72, 153, 0.12);
-            border-right: 4px solid #ec4899;
-            padding: 14px;
-            border-radius: 8px;
+        .randa-box {
+            background: linear-gradient(135deg, rgba(217, 70, 239, 0.12), rgba(139, 92, 246, 0.12));
+            border-right: 4px solid #d946ef;
+            padding: 16px 18px;
+            border-radius: 12px;
             margin-top: 15px;
+            border-top: 1px solid rgba(217, 70, 239, 0.2);
         }
-        .funny-title { color: #f472b6; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-        .funny-desc { color: #f8fafc; line-height: 1.6; }
+        .randa-title { 
+            color: #f472b6; 
+            font-weight: 900; 
+            font-size: 1.05rem;
+            margin-bottom: 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .randa-desc { color: #ffffff; line-height: 1.7; font-size: 1rem; font-weight: 500; }
 
         .randa-btn {
-            margin-top: 15px;
-            background: #1e293b;
-            border: 1px solid #334155;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #cbd5e1;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.88rem;
             cursor: pointer;
             width: 100%;
+            font-weight: bold;
+        }
+        .randa-btn:hover {
+            background: rgba(217, 70, 239, 0.2);
+            color: #fff;
+            border-color: #d946ef;
         }
         .edit-area {
             display: none;
-            margin-top: 10px;
+            margin-top: 12px;
+            animation: fadeIn 0.3s ease-out;
         }
         .edit-area textarea {
             width: 100%;
-            height: 80px;
-            background: #0f172a;
-            border: 1px solid #a855f7;
+            height: 90px;
+            background: #0d1117;
+            border: 1px solid #d946ef;
             color: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             font-family: inherit;
-            margin-bottom: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        .btn-save {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: #d946ef;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 
@@ -118,30 +186,31 @@
 </head>
 <body>
 
-    <h1>عالم الأسماء مع رندة ✨</h1>
+    <div class="header-tag"><i class="fa-solid fa-crown"></i> الإصدار الخاص المعتمد</div>
+    <h1>موسوعة الأسماء <span>بلمسة رندة زربا</span> ✨</h1>
 
-    <div class="box">
+    <div class="search-box">
         <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: نوال، جومانه)...">
-        <button onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> بحث</button>
+        <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
     </div>
 
-    <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث والتحليل...</div>
+    <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري استحضار التحليل واللمسة المخصصة...</div>
 
     <div class="card" id="card">
         <div class="title" id="nameTitle">-</div>
         <div class="badge" id="nameOrigin">-</div>
         <div class="desc" id="nameMeaning">-</div>
 
-        <div class="funny-box">
-            <div class="funny-title"><i class="fa-solid fa-face-laugh-beam"></i> لمسة رندة (التحليل الخاص):</div>
-            <div class="funny-desc" id="funnyText">-</div>
+        <div class="randa-box">
+            <div class="randa-title"><i class="fa-solid fa-gem"></i> رأي وتحليل رندة زربا:</div>
+            <div class="randa-desc" id="funnyText">-</div>
         </div>
 
-        <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-pen-to-square"></i> تعديل تحليل رندة (خاص برندة)</button>
+        <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-user-gear"></i> لوحة التحكم الخاصة بـ رندة زربا</button>
         
         <div class="edit-area" id="editArea">
-            <textarea id="randaInput" placeholder="اكتب التحليل الفكاهي الخاص بهذا الاسم..."></textarea>
-            <button onclick="saveRandaComment()"><i class="fa-solid fa-floppy-disk"></i> حفظ أونلاين</button>
+            <textarea id="randaInput" placeholder="اكتبي التحليل الفكاهي أو Bصمتك المخصصة لهذا الاسم..."></textarea>
+            <button class="btn-save" onclick="saveRandaComment()"><i class="fa-solid fa-cloud-arrow-up"></i> اعتماد ونشر أونلاين</button>
         </div>
     </div>
 
@@ -226,9 +295,9 @@
                 } else {
                     const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء');
                     if (isFemale) {
-                        document.getElementById('funnyText').innerText = `${rawInput} شخصية راقية، بتحب الروقان والقهوة والتفاصيل مرتبة عندها 100%!`;
+                        document.getElementById('funnyText').innerText = `${rawInput} شخصية راقية وحساسة، بتعرف شو بدها بالضبط والتفاصيل عندها مية بالمية!`;
                     } else {
-                        document.getElementById('funnyText').innerText = `${rawInput} شخصية حاسمة، بيكره العجلة وبحب يحل الأمور بهدوء وبصمت!`;
+                        document.getElementById('funnyText').innerText = `${rawInput} شخصية قيادية، بحب الهدوء وبيفكر صح قبل أي قرار!`;
                     }
                 }
                 loader.style.display = 'none';
@@ -237,7 +306,7 @@
         }
 
         function openRandaEditor() {
-            const pin = prompt("أدخلي الرمز السري الخاص برندة:");
+            const pin = prompt("أدخلي الرمز السري الخاص بـ رندة زربا:");
             if (pin === "2012") {
                 document.getElementById('editArea').style.display = 'block';
                 document.getElementById('randaInput').value = document.getElementById('funnyText').innerText;
@@ -252,11 +321,11 @@
 
             const cleanKeyForFirebase = normalizeText(currentSearchName).replace(/[.#$\[\]]/g, '');
             database.ref('randa_comments/' + cleanKeyForFirebase).set(comment).then(() => {
-                alert("تم حفظ تحليل رندة بنجاح وستظهر للجميع الآن!");
+                alert("تم اعتماد لمسة رندة زربا بنجاح وستظهر للجميع الآن!");
                 document.getElementById('funnyText').innerText = comment;
                 document.getElementById('editArea').style.display = 'none';
             }).catch(err => {
-                alert("خطأ بالحفظ: تأكد من تفعيل Realtime Database بـ Firebase");
+                alert("خطأ بالحفظ: تأكد من تفعيل Realtime Database");
             });
         }
     </script>
