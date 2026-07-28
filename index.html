@@ -311,14 +311,14 @@
 
     <!-- صندوق البحث عن اسم فردي -->
     <div class="search-box" id="singleBox">
-        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا..." onkeyup="if(event.key === 'Enter') searchName()">
+        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، نوال)..." onkeyup="if(event.key === 'Enter') searchName()">
         <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
     </div>
 
     <!-- صندوق كاشف التوافق -->
     <div class="search-box double-input" id="doubleBox" style="display: none;">
-        <input type="text" id="firstNameInput" placeholder="الاسم الأول...">
-        <input type="text" id="secondNameInput" placeholder="الاسم الثاني..." onkeyup="if(event.key === 'Enter') checkCompatibility()">
+        <input type="text" id="firstNameInput" placeholder="الاسم الأول (مثال: محمد)...">
+        <input type="text" id="secondNameInput" placeholder="الاسم الثاني (مثال: رندة)..." onkeyup="if(event.key === 'Enter') checkCompatibility()">
         <button class="btn-search" onclick="checkCompatibility()"><i class="fa-solid fa-heart-circle-check"></i> فحص التوافق</button>
     </div>
 
@@ -364,6 +364,16 @@
         let currentSearchName = "";
         let currentMode = "single";
 
+        // قاموس أولي لمعاني الأسماء
+        const defaultMeanings = {
+            "هاشم": "اسم علم عربي مذكر، يعني الكاسر أو الهشام الذي يكسر الخبز ليطعم غيره، وهو يدل على الكرم الشديد والجود والشهامة.",
+            "وعد": "اسم علم عربي مؤنث، يعني الالتزام والعهد والوفاء بالذمة والصراحة في التعامل والعهد بالخير.",
+            "رنده": "اسم علم عربي مؤنث، منسوب إلى شجر الرند وهو الشجر طيب الرائحة الكريمة ذات العبق العطر.",
+            "رندة": "اسم علم عربي مؤنث، منسوب إلى شجر الرند وهو الشجر طيب الرائحة الكريمة ذات العبق العطر.",
+            "محمد": "اسم علم عربي مذكر، صيغة مبالغة من الحمد، ويعني المحمود والمشكور كثير الصفات الحميدة.",
+            "احمد": "اسم علم عربي مذكر، من صفات الحمد والمحمودية والثناء والرفعة."
+        };
+
         fetch('names_db.json')
             .then(res => res.json())
             .then(data => { db = data; })
@@ -379,6 +389,7 @@
             return txt.value;
         }
 
+        // --- التبديل بين كشف اسم وكاشف التوافق ---
         function switchTab(mode) {
             currentMode = mode;
             document.getElementById('card').style.display = 'none';
@@ -395,7 +406,7 @@
             }
         }
 
-        // --- البحث المعالج ديناميكياً لتنظيف النصوص من أي ألقاب وشخصيات ---
+        // --- البحث المباشر وتصفية السياسيين ---
         async function searchName() {
             const rawInput = document.getElementById('nameInput').value.trim();
             const card = document.getElementById('card');
@@ -413,48 +424,55 @@
 
             if (foundKey) {
                 document.getElementById('nameTitle').innerText = rawInput;
-                document.getElementById('nameOrigin').innerText = db[foundKey].origin || "أصل عربي";
+                document.getElementById('nameOrigin').innerText = db[foundKey].origin;
                 document.getElementById('nameMeaning').innerText = db[foundKey].meaning;
+            } else if (defaultMeanings[cleanedInput] || defaultMeanings[rawInput]) {
+                document.getElementById('nameTitle').innerText = rawInput;
+                document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
+                document.getElementById('nameMeaning').innerText = defaultMeanings[cleanedInput] || defaultMeanings[rawInput];
             } else {
                 try {
-                    const searchQuery = `"معنى اسم ${rawInput}" OR "اسم علم ${rawInput}"`;
+                    const searchQuery = `"${rawInput}" "اسم علم" OR "اسم شخصي" -بلفور -لاعب -سياسي`;
                     const searchUrl = `https://ar.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&format=json&origin=*`;
                     const response = await fetch(searchUrl);
                     const data = await response.json();
 
-                    let cleanSnippet = "";
+                    let foundValidMeaning = false;
 
                     if (data.query && data.query.search.length > 0) {
-                        let rawSnippet = data.query.search[0].snippet.replace(/<\/?[^>]+(>|$)/g, "");
-                        
-                        // الفلترة الذكية: إذا كان السنيبت بيحكي عن ألقاب شخصية تاريخية أو شيوخ
-                        if (rawSnippet.includes("المتوفى") || rawSnippet.includes("بن") || rawSnippet.includes("فقيه") || rawSnippet.includes("المشتهر")) {
-                            cleanSnippet = `اسم علم عربي أصيل، يحمل معاني النور والرفع والأصالة والصفات الحميدة.`;
-                        } else {
-                            cleanSnippet = decodeHTML(rawSnippet);
+                        const bestMatch = data.query.search.find(item => 
+                            !item.title.includes("بلفور") && 
+                            !item.title.includes("لاعب") && 
+                            !item.snippet.includes("سياسي")
+                        );
+
+                        if (bestMatch) {
+                            let snippet = bestMatch.snippet.replace(/<\/?[^>]+(>|$)/g, "");
+                            document.getElementById('nameTitle').innerText = rawInput;
+                            document.getElementById('nameOrigin').innerText = "المصدر: الموسوعة المعتمدة";
+                            document.getElementById('nameMeaning').innerText = decodeHTML(snippet) + "...";
+                            foundValidMeaning = true;
                         }
-                    } else {
-                        cleanSnippet = `اسم علم عربي يحمل معاني الجمال والأصالة والصفات الطيبة.`;
                     }
 
-                    document.getElementById('nameTitle').innerText = rawInput;
-                    document.getElementById('nameOrigin').innerText = "المعجم العربي المعتمد";
-                    document.getElementById('nameMeaning').innerText = cleanSnippet;
-
+                    if (!foundValidMeaning) {
+                        document.getElementById('nameTitle').innerText = rawInput;
+                        document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
+                        document.getElementById('nameMeaning').innerText = "اسم علم عربي أصيل يحمل معاني النبل والتألق والصفات الحميدة.";
+                    }
                 } catch (e) {
                     document.getElementById('nameTitle').innerText = rawInput;
                     document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
-                    document.getElementById('nameMeaning').innerText = "اسم علم عربي يدل على السمو والصفات الطيبة.";
+                    document.getElementById('nameMeaning').innerText = "اسم علم جميل يدل على الأصالة والسمو والصفات الطيبة.";
                 }
             }
 
-            // جلب تحليل رندة من الفايربيس
             const cleanKeyForFirebase = cleanedInput.replace(/[.#$\[\]]/g, '');
             database.ref('randa_comments/' + cleanKeyForFirebase).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     document.getElementById('funnyText').innerText = snapshot.val();
                 } else {
-                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء');
+                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء') || rawInput === 'وعد';
                     if (isFemale) {
                         document.getElementById('funnyText').innerText = `${rawInput} شخصية راقية وحساسة، بتعرف شو بدها بالضبط والتفاصيل عندها مية بالمية!`;
                     } else {
@@ -466,6 +484,7 @@
             });
         }
 
+        // --- كاشف التوافق بين شخصين ---
         function checkCompatibility() {
             const name1 = document.getElementById('firstNameInput').value.trim();
             const name2 = document.getElementById('secondNameInput').value.trim();
@@ -476,7 +495,7 @@
 
             setTimeout(() => {
                 const totalLength = name1.length + name2.length;
-                const score = 80 + (totalLength * 3) % 21;
+                const score = 80 + (totalLength * 3) % 21; // نتيجة بين 80% و 100%
 
                 document.getElementById('nameTitle').innerText = `${name1} ❤️ ${name2}`;
                 document.getElementById('nameOrigin').innerText = `نسبة التوافق الروحي: ${score}%`;
@@ -488,6 +507,7 @@
             }, 600);
         }
 
+        // --- لوحة التحكم والتعديل بكلمة السر ---
         function openRandaEditor() {
             const pin = prompt("أدخلي الرمز السري الخاص بـ رندة زربا:");
             if (pin === "2012") {
@@ -512,6 +532,7 @@
             });
         }
 
+        // --- مشاركة البطاقة كصورة ---
         function shareCardAsImage() {
             const cardElement = document.getElementById('card');
             html2canvas(cardElement, { backgroundColor: '#161b22' }).then(canvas => {
@@ -533,7 +554,7 @@
             });
         }
 
-        // خلفية النجوم
+        // --- خلفية النجوم والتفاعلية ---
         const canvas = document.getElementById('starsCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -569,7 +590,7 @@
         }
         animateStars();
 
-        // دعم PWA
+        // --- دعم PWA التثبيت ---
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
