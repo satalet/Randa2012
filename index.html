@@ -12,6 +12,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -28,6 +29,25 @@
             min-height: 100vh;
             margin: 0;
             background: radial-gradient(circle at top, #2e1065 0%, #0d1117 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* حاوية النجوم التفاعلية بالخلفية */
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* رفع العناصر فوق الخلفية التفاعلية */
+        .install-pwa-banner, .header-tag, h1, .tabs, .section-box, .loader, .card {
+            position: relative;
+            z-index: 10;
         }
 
         /* شريط تثبيت التطبيق */
@@ -64,6 +84,7 @@
             font-size: 0.85rem;
             font-weight: bold;
             margin-bottom: 12px;
+            backdrop-filter: blur(5px);
         }
         h1 { 
             color: #ffffff; 
@@ -86,6 +107,7 @@
             padding: 6px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         .tab-btn {
             padding: 10px 20px;
@@ -120,6 +142,7 @@
             padding: 8px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         .compat-inputs {
             display: flex;
@@ -138,6 +161,7 @@
             font-size: 1.05rem;
             outline: none;
             font-family: inherit;
+            backdrop-filter: blur(10px);
         }
         input::placeholder { color: #8b949e; }
         
@@ -167,7 +191,7 @@
         }
 
         .card {
-            background: rgba(22, 27, 34, 0.95);
+            background: rgba(22, 27, 34, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 28px;
             border-radius: 20px;
@@ -175,7 +199,7 @@
             max-width: 500px;
             display: none;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            position: relative;
+            backdrop-filter: blur(12px);
         }
         .title { color: #f472b6; font-size: 2.2rem; font-weight: 900; margin-bottom: 4px; }
         .badge { color: #a78bfa; font-size: 0.9rem; margin-bottom: 18px; font-weight: bold; }
@@ -275,13 +299,17 @@
         }
     </style>
 
+    <!-- مكتبة النجوم والتفاعلات الساحرة -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.12.0/tsparticles.slim.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
-    <!-- شريط تنزيل التطبيق -->
+    <!-- الخلفية التفاعلية -->
+    <div id="tsparticles"></div>
+
     <div class="install-pwa-banner" id="pwaBanner">
         <span><i class="fa-solid fa-mobile-screen-button"></i> تنزيل التطبيق على الجوال</span>
         <button class="install-pwa-btn" onclick="installApp()">تثبيت الأن</button>
@@ -341,6 +369,42 @@
     </div>
 
     <script>
+        /* تشغيل محرك الجزيئات الساحرة بالخلفية */
+        tsParticles.load("tsparticles", {
+            fpsLimit: 60,
+            particles: {
+                number: { value: 40, density: { enable: true, area: 800 } },
+                color: { value: ["#d946ef", "#c084fc", "#f472b6"] },
+                shape: { type: "circle" },
+                opacity: { value: { min: 0.2, max: 0.7 } },
+                size: { value: { min: 1, max: 3 } },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    outModes: { default: "out" }
+                },
+                links: {
+                    enable: true,
+                    distance: 120,
+                    color: "#c084fc",
+                    opacity: 0.25,
+                    width: 1
+                }
+            },
+            interactivity: {
+                events: {
+                    onHover: { enable: true, mode: "grab" },
+                    onClick: { enable: true, mode: "push" }
+                },
+                modes: {
+                    grab: { distance: 140, links: { opacity: 0.5 } },
+                    push: { quantity: 3 }
+                }
+            },
+            detectRetina: true
+        });
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
