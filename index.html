@@ -18,7 +18,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 15px;
+            padding: 30px 15px;
             min-height: 100vh;
             margin: 0;
             background: radial-gradient(circle at top, #2e1065 0%, #0d1117 100%);
@@ -32,47 +32,87 @@
             font-size: 0.85rem;
             font-weight: bold;
             margin-bottom: 12px;
-            letter-spacing: 0.5px;
         }
         h1 { 
             color: #ffffff; 
-            margin: 0 0 25px 0; 
-            font-size: 2.2rem;
+            margin: 0 0 20px 0; 
+            font-size: 2.1rem;
             text-align: center;
             font-weight: 900;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
         h1 span {
             background: linear-gradient(135deg, #f472b6, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .search-box {
+
+        /* التبويبات الرئيسيّة */
+        .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 25px;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 6px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d946ef, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
+        }
+
+        /* أشرطة البحث والمدخلات */
+        .section-box {
             width: 100%;
             max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
             background: rgba(22, 27, 34, 0.8);
             padding: 8px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
         }
-        input {
-            flex: 1;
+        .compat-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .input-style {
+            width: 100%;
             padding: 12px 16px;
             border-radius: 12px;
-            border: none;
-            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(22, 27, 34, 0.8);
             color: white;
             font-size: 1.05rem;
             outline: none;
             font-family: inherit;
         }
         input::placeholder { color: #8b949e; }
-        button.btn-search {
+        
+        button.btn-main {
+            width: 100%;
             padding: 12px 24px;
             border-radius: 12px;
             border: none;
@@ -83,10 +123,11 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
         }
-        button.btn-search:hover {
+        button.btn-main:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(217, 70, 239, 0.5);
         }
+
         .loader {
             display: none;
             color: #f472b6;
@@ -94,21 +135,18 @@
             font-weight: bold;
             font-size: 1.1rem;
         }
+
+        /* البطاقات */
         .card {
-            background: rgba(22, 27, 34, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(22, 27, 34, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 28px;
             border-radius: 20px;
             width: 100%;
             max-width: 500px;
             display: none;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            backdrop-filter: blur(12px);
-            animation: fadeIn 0.4s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            position: relative;
         }
         .title { color: #f472b6; font-size: 2.2rem; font-weight: 900; margin-bottom: 4px; }
         .badge { color: #a78bfa; font-size: 0.9rem; margin-bottom: 18px; font-weight: bold; }
@@ -133,27 +171,49 @@
         }
         .randa-desc { color: #ffffff; line-height: 1.7; font-size: 1rem; font-weight: 500; }
 
-        .randa-btn {
+        /* شريط التوافق المئوي */
+        .score-circle {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #f472b6;
+            text-align: center;
+            margin: 10px 0;
+            text-shadow: 0 0 20px rgba(244, 114, 182, 0.4);
+        }
+
+        /* أزرار التحكم والتحميل */
+        .action-btns {
+            display: flex;
+            gap: 10px;
             margin-top: 20px;
+        }
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .randa-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #cbd5e1;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 0.88rem;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
             cursor: pointer;
-            width: 100%;
+            flex: 1;
             font-weight: bold;
         }
-        .randa-btn:hover {
-            background: rgba(217, 70, 239, 0.2);
-            color: #fff;
-            border-color: #d946ef;
-        }
+
         .edit-area {
             display: none;
             margin-top: 12px;
-            animation: fadeIn 0.3s ease-out;
         }
         .edit-area textarea {
             width: 100%;
@@ -178,8 +238,18 @@
             font-weight: bold;
             cursor: pointer;
         }
+        .watermark {
+            display: none;
+            text-align: center;
+            color: #a78bfa;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            font-weight: bold;
+        }
     </style>
 
+    <!-- HTML2Canvas لتوليد الصور -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -189,16 +259,40 @@
     <div class="header-tag"><i class="fa-solid fa-crown"></i> الإصدار الخاص المعتمد</div>
     <h1>موسوعة الأسماء <span>بلمسة رندة زربا</span> ✨</h1>
 
-    <div class="search-box">
-        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، نوال)...">
-        <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
+    <!-- تبويبات التنقل -->
+    <div class="tabs">
+        <button class="tab-btn active" id="tab1" onclick="switchTab('single')"><i class="fa-solid fa-magnifying-glass"></i> كشف اسم</button>
+        <button class="tab-btn" id="tab2" onclick="switchTab('compat')"><i class="fa-solid fa-heart"></i> كاشف التوافق</button>
+    </div>
+
+    <!-- قسم كشف الاسم الفردي -->
+    <div class="section-box" id="singleSection">
+        <div class="search-box">
+            <input type="text" id="nameInput" class="input-style" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، رندة)..." style="border:none; background:transparent;">
+            <button class="btn-main" style="width:auto;" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
+        </div>
+    </div>
+
+    <!-- قسم كاشف التوافق -->
+    <div class="section-box" id="compatSection" style="display: none;">
+        <div class="compat-inputs">
+            <input type="text" id="firstName" class="input-style" placeholder="الاسم الأول (مثال: رندة)...">
+            <input type="text" id="secondName" class="input-style" placeholder="الاسم الثاني (مثال: محمد)...">
+            <button class="btn-main" onclick="checkCompatibility()"><i class="fa-solid fa-calculator"></i> احسب نسبة التوافق ✨</button>
+        </div>
     </div>
 
     <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري استحضار التحليل واللمسة المخصصة...</div>
 
+    <!-- بطاقة العرض الرئيسية -->
     <div class="card" id="card">
         <div class="title" id="nameTitle">-</div>
         <div class="badge" id="nameOrigin">-</div>
+        
+        <div id="compatScoreBox" style="display: none;">
+            <div class="score-circle" id="scoreVal">0%</div>
+        </div>
+
         <div class="desc" id="nameMeaning">-</div>
 
         <div class="randa-box">
@@ -206,10 +300,15 @@
             <div class="randa-desc" id="funnyText">-</div>
         </div>
 
-        <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-user-gear"></i> لوحة التحكم الخاصة بـ رندة زربا</button>
+        <div class="watermark" id="cardWatermark">✨ تم التوليد عبر موسوعة الأسماء بلمسة رندة زربا ✨</div>
+
+        <div class="action-btns" id="actionBtns">
+            <button class="btn-download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> تحميل بطاقة الإهداء</button>
+            <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-user-gear"></i> لوحة التحكم</button>
+        </div>
         
         <div class="edit-area" id="editArea">
-            <textarea id="randaInput" placeholder="اكتبي التحليل الفكاهي أو بصمتك المخصصة لهذا الاسم..."></textarea>
+            <textarea id="randaInput" placeholder="اكتبي التحليل الفكاهي أو بصمتك المخصصة..."></textarea>
             <button class="btn-save" onclick="saveRandaComment()"><i class="fa-solid fa-cloud-arrow-up"></i> اعتماد ونشر أونلاين</button>
         </div>
     </div>
@@ -230,10 +329,10 @@
 
         let db = {};
         let currentSearchName = "";
+        let currentMode = "single";
 
-        // معجم داخلي احتياطي للمعاني النظيفة والمباشرة
         const defaultMeanings = {
-            "هاشم": "اسم علم عربي مذكر، يعني الكاسر أو الهشام الذي يكسر الخبز ليطعم غيره، وهو يدل على الكرم الشديد والكرم والجود والشهامة.",
+            "هاشم": "اسم علم عربي مذكر، يعني الكاسر أو الهشام الذي يكسر الخبز ليطعم غيره، وهو يدل على الكرم الشديد والجود والشهامة.",
             "وعد": "اسم علم عربي مؤنث، يعني الالتزام والعهد والوفاء بالذمة والصراحة في التعامل والعهد بالخير.",
             "رندة": "اسم علم عربي مؤنث، منسوب إلى شجر الرند وهو الشجر طيب الرائحة الكريمة ذات العبق العطر.",
             "محمد": "اسم علم عربي مذكر، صيغة مبالغة من الحمد، ويعني المحمود والمشكور كثير الصفات الحميدة.",
@@ -245,14 +344,81 @@
             .then(data => { db = data; })
             .catch(err => console.error(err));
 
+        function switchTab(mode) {
+            currentMode = mode;
+            document.getElementById('card').style.display = 'none';
+            if (mode === 'single') {
+                document.getElementById('tab1').classList.add('active');
+                document.getElementById('tab2').classList.remove('active');
+                document.getElementById('singleSection').style.display = 'flex';
+                document.getElementById('compatSection').style.display = 'none';
+            } else {
+                document.getElementById('tab2').classList.add('active');
+                document.getElementById('tab1').classList.remove('active');
+                document.getElementById('compatSection').style.display = 'flex';
+                document.getElementById('singleSection').style.display = 'none';
+            }
+        }
+
         function normalizeText(str) {
             return str.replace(/[أإآ]/g, 'ا').replace(/ة$/g, 'ه').replace(/[\u064B-\u0652]/g, '').trim();
         }
 
-        function decodeHTML(html) {
-            let txt = document.createElement("textarea");
-            txt.innerHTML = html;
-            return txt.value;
+        /* حساب الجُمل الأبجدي لحساب التوافق */
+        function getAbjadValue(str) {
+            const abjad = {
+                'ا':1, 'ب':2, 'ج':3, 'د':4, 'ه':5, 'و':6, 'ز':7, 'ح':8, 'ط':9,
+                'ي':10, 'ك':20, 'ل':30, 'م':40, 'ن':50, 'س':60, 'ع':70, 'ف':80,
+                'ص':90, 'ق':100, 'ر':200, 'ش':300, 'ت':400, 'ث':500, 'خ':600,
+                'ذ':700, 'ض':800, 'ظ':900, 'غ':1000, 'ى':10, 'ئ':10, 'ء':1
+            };
+            let sum = 0;
+            const clean = normalizeText(str);
+            for (let char of clean) {
+                if (abjad[char]) sum += abjad[char];
+            }
+            return sum;
+        }
+
+        function checkCompatibility() {
+            const name1 = document.getElementById('firstName').value.trim();
+            const name2 = document.getElementById('secondName').value.trim();
+
+            if (!name1 || !name2) {
+                alert("الرجاء كتابة الاسمين أولاً!");
+                return;
+            }
+
+            const card = document.getElementById('card');
+            const loader = document.getElementById('loader');
+            card.style.display = 'none';
+            loader.style.display = 'block';
+
+            // حساب التوافق رياضياً بناءً على الجمل والنسبة المئوية المحصورة بين 70% و 99%
+            const val1 = getAbjadValue(name1);
+            const val2 = getAbjadValue(name2);
+            let score = ((val1 + val2) % 30) + 70; // يعطي دايماً نتيجة بين 70% و 99%
+
+            setTimeout(() => {
+                document.getElementById('nameTitle').innerText = `${name1} ❤️ ${name2}`;
+                document.getElementById('nameOrigin').innerText = "تحليل انسجام وتوافق الأسماء";
+                document.getElementById('compatScoreBox').style.display = 'block';
+                document.getElementById('scoreVal').innerText = `${score}%`;
+                document.getElementById('nameMeaning').innerText = `بناءً على حسابات التوافق الأبجدي واللغوي، يظهر انسجام وتناغم عالي بين اسم (${name1}) واسم (${name2}) في الصفات والطباع.`;
+
+                let randaComment = "";
+                if (score >= 90) {
+                    randaComment = `التوافق عالي جداً! تفاهم عالي وطاقة إيجابية ممتازة، التناغم بينكم كأنه مكتوب ومحسوب بالمليمتر!`;
+                } else if (score >= 80) {
+                    randaComment = `نسبة انسجام ممتازة! في كيمياء حلوة وتفاهم راقي، والمهم إنه كل واحد بكمل الثاني بطريقته!`;
+                } else {
+                    randaComment = `نسبة توافق متوازنة ولطيفة! تحتاج شوية هدوء وتنسيق والتفاصيل الصغيرة بتكون عسل بينكم!`;
+                }
+
+                document.getElementById('funnyText').innerText = randaComment;
+                loader.style.display = 'none';
+                card.style.display = 'block';
+            }, 500);
         }
 
         async function searchName() {
@@ -265,6 +431,7 @@
 
             card.style.display = 'none';
             document.getElementById('editArea').style.display = 'none';
+            document.getElementById('compatScoreBox').style.display = 'none';
             loader.style.display = 'block';
 
             const cleanedInput = normalizeText(rawInput);
@@ -279,32 +446,9 @@
                 document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
                 document.getElementById('nameMeaning').innerText = defaultMeanings[cleanedInput] || defaultMeanings[rawInput];
             } else {
-                try {
-                    // البحث المباشر بصفحة ويكيبيديا لـ "اسم علم" حصراً للابتعاد عن الشخصيات
-                    const pageTitle = `هاشم (اسم)` === `${rawInput} (اسم)` ? `${rawInput} (اسم)` : `${rawInput} (اسم)`;
-                    const wikiUrl = `https://ar.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(pageTitle)}&format=json&origin=*`;
-                    
-                    const response = await fetch(wikiUrl);
-                    const data = await response.json();
-                    const pages = data.query.pages;
-                    const pageId = Object.keys(pages)[0];
-
-                    if (pageId !== "-1" && pages[pageId].extract && !pages[pageId].extract.includes("لاعب") && !pages[pageId].extract.includes("سياسي")) {
-                        let text = pages[pageId].extract;
-                        document.getElementById('nameTitle').innerText = rawInput;
-                        document.getElementById('nameOrigin').innerText = "المصدر: الموسوعة المعجمية المعتمدة";
-                        document.getElementById('nameMeaning').innerText = text.substring(0, 200) + "...";
-                    } else {
-                        // إظهار معنى لغوي قياسي نضيف
-                        document.getElementById('nameTitle').innerText = rawInput;
-                        document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
-                        document.getElementById('nameMeaning').innerText = `اسم علم عربي أصيل يحمل معاني النبل والصفات الحميدة والتميز في مجتمعه.`;
-                    }
-                } catch (e) {
-                    document.getElementById('nameTitle').innerText = rawInput;
-                    document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
-                    document.getElementById('nameMeaning').innerText = "اسم علم جميل يدل على الأصالة والسمو والصفات الطيبة.";
-                }
+                document.getElementById('nameTitle').innerText = rawInput;
+                document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
+                document.getElementById('nameMeaning').innerText = `اسم علم عربي أصيل يحمل معاني النبل والصفات الحميدة والتميز في مجتمعه.`;
             }
 
             const cleanKeyForFirebase = cleanedInput.replace(/[.#$\[\]]/g, '');
@@ -312,7 +456,7 @@
                 if (snapshot.exists()) {
                     document.getElementById('funnyText').innerText = snapshot.val();
                 } else {
-                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء') || rawInput === 'وعد';
+                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء') || rawInput === 'وعد' || rawInput === 'رندة';
                     if (isFemale) {
                         document.getElementById('funnyText').innerText = `${rawInput} شخصية راقية وحساسة، بتعرف شو بدها بالضبط والتفاصيل عندها مية بالمية!`;
                     } else {
@@ -321,6 +465,29 @@
                 }
                 loader.style.display = 'none';
                 card.style.display = 'block';
+            });
+        }
+
+        /* توليد وتحميل صورة الإهداء */
+        function downloadCard() {
+            const card = document.getElementById('card');
+            const actionBtns = document.getElementById('actionBtns');
+            const watermark = document.getElementById('cardWatermark');
+
+            actionBtns.style.display = 'none';
+            watermark.style.display = 'block';
+
+            html2canvas(card, {
+                backgroundColor: '#161b22',
+                scale: 2
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `بطاقة_${document.getElementById('nameTitle').innerText}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+
+                actionBtns.style.display = 'flex';
+                watermark.style.display = 'none';
             });
         }
 
@@ -344,7 +511,7 @@
                 document.getElementById('funnyText').innerText = comment;
                 document.getElementById('editArea').style.display = 'none';
             }).catch(err => {
-                alert("خطأ بالحفظ: تأكد من تفعيل Realtime Database");
+                alert("خطأ بالحفظ!");
             });
         }
     </script>
