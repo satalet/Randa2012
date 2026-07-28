@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randa Names Hub | عالم الأسماء مع رندة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 15px;
+            min-height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle at top, #1e1b4b 0%, #0b0f19 100%);
+        }
+        h1 { 
+            color: #f472b6; 
+            margin-bottom: 20px; 
+            font-size: 2.2rem;
+            text-align: center;
+            font-weight: 900;
+        }
+        .box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 480px;
+        }
+        input {
+            flex: 1;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            background: #1e293b;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        input:focus { border-color: #a855f7; }
+        button {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .loader {
+            display: none;
+            color: #ec4899;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .card {
+            background: #151d30;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 24px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            display: none;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        .title { color: #ec4899; font-size: 2rem; font-weight: 900; margin-bottom: 5px; }
+        .badge { color: #c084fc; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold; }
+        .desc { color: #cbd5e1; line-height: 1.7; font-size: 1rem; margin-bottom: 15px; }
+        
+        .funny-box {
+            background: rgba(236, 72, 153, 0.12);
+            border-right: 4px solid #ec4899;
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .funny-title { color: #f472b6; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .funny-desc { color: #f8fafc; line-height: 1.6; }
+
+        .randa-btn {
+            margin-top: 15px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        .edit-area {
+            display: none;
+            margin-top: 10px;
+        }
+        .edit-area textarea {
+            width: 100%;
+            height: 80px;
+            background: #0f172a;
+            border: 1px solid #a855f7;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: inherit;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <h1>عالم الأسماء مع رندة ✨</h1>
+
+    <div class="box">
+        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: نوال، جومانه)...">
+        <button onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> بحث</button>
+    </div>
+
+    <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث والتحليل...</div>
+
+    <div class="card" id="card">
+        <div class="title" id="nameTitle">-</div>
+        <div class="badge" id="nameOrigin">-</div>
+        <div class="desc" id="nameMeaning">-</div>
+
+        <div class="funny-box">
+            <div class="funny-title"><i class="fa-solid fa-face-laugh-beam"></i> لمسة رندة (التحليل الخاص):</div>
+            <div class="funny-desc" id="funnyText">-</div>
+        </div>
+
+        <button class="randa-btn" onclick="openRandaEditor()"><i class="fa-solid fa-pen-to-square"></i> تعديل تحليل رندة (خاص برندة)</button>
+        
+        <div class="edit-area" id="editArea">
+            <textarea id="randaInput" placeholder="اكتب التحليل الفكاهي الخاص بهذا الاسم..."></textarea>
+            <button onclick="saveRandaComment()"><i class="fa-solid fa-floppy-disk"></i> حفظ أونلاين</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAD9NWqGXT1Iewyc8947i6_OJ_MXnPp0EH4",
+            authDomain: "randa-names.firebaseapp.com",
+            projectId: "randa-names",
+            storageBucket: "randa-names.firebasestorage.app",
+            messagingSenderId: "282324926770",
+            appId: "1:282324926770:web:666ef9be9b07692610972b",
+            databaseURL: "https://randa-names-default-rtdb.firebaseio.com"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let db = {};
+        let currentSearchName = "";
+
+        fetch('names_db.json')
+            .then(res => res.json())
+            .then(data => { db = data; })
+            .catch(err => console.error(err));
+
+        function normalizeText(str) {
+            return str.replace(/[أإآ]/g, 'ا').replace(/ة$/g, 'ه').replace(/[\u064B-\u0652]/g, '').trim();
+        }
+
+        function decodeHTML(html) {
+            let txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        async function searchName() {
+            const rawInput = document.getElementById('nameInput').value.trim();
+            const card = document.getElementById('card');
+            const loader = document.getElementById('loader');
+
+            if (!rawInput) return;
+            currentSearchName = rawInput;
+
+            card.style.display = 'none';
+            document.getElementById('editArea').style.display = 'none';
+            loader.style.display = 'block';
+
+            const cleanedInput = normalizeText(rawInput);
+            let foundKey = Object.keys(db).find(key => normalizeText(key) === cleanedInput);
+
+            if (foundKey) {
+                document.getElementById('nameTitle').innerText = rawInput;
+                document.getElementById('nameOrigin').innerText = db[foundKey].origin;
+                document.getElementById('nameMeaning').innerText = db[foundKey].meaning;
+            } else {
+                try {
+                    const searchUrl = `https://ar.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(rawInput + " اسم")}&format=json&origin=*`;
+                    const response = await fetch(searchUrl);
+                    const data = await response.json();
+
+                    if (data.query && data.query.search.length > 0) {
+                        let snippet = data.query.search[0].snippet.replace(/<\/?[^>]+(>|$)/g, "");
+                        document.getElementById('nameTitle').innerText = rawInput;
+                        document.getElementById('nameOrigin').innerText = "المصدر: موسوعة ويكيبيديا المعتمدة";
+                        document.getElementById('nameMeaning').innerText = decodeHTML(snippet) + "...";
+                    } else {
+                        document.getElementById('nameTitle').innerText = rawInput;
+                        document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
+                        document.getElementById('nameMeaning').innerText = "اسم علم يحمل معاني الأصالة والرفعة والصفات الحميدة.";
+                    }
+                } catch (e) {
+                    document.getElementById('nameTitle').innerText = rawInput;
+                    document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
+                    document.getElementById('nameMeaning').innerText = "اسم علم جميل يدل على النقاء والتميز.";
+                }
+            }
+
+            const cleanKeyForFirebase = cleanedInput.replace(/[.#$\[\]]/g, '');
+            database.ref('randa_comments/' + cleanKeyForFirebase).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    document.getElementById('funnyText').innerText = snapshot.val();
+                } else {
+                    const isFemale = rawInput.endsWith('ة') || rawInput.endsWith('ه') || rawInput.endsWith('اء');
+                    if (isFemale) {
+                        document.getElementById('funnyText').innerText = `${rawInput} شخصية راقية، بتحب الروقان والقهوة والتفاصيل مرتبة عندها 100%!`;
+                    } else {
+                        document.getElementById('funnyText').innerText = `${rawInput} شخصية حاسمة، بيكره العجلة وبحب يحل الأمور بهدوء وبصمت!`;
+                    }
+                }
+                loader.style.display = 'none';
+                card.style.display = 'block';
+            });
+        }
+
+        function openRandaEditor() {
+            const pin = prompt("أدخلي الرمز السري الخاص برندة:");
+            if (pin === "2012") {
+                document.getElementById('editArea').style.display = 'block';
+                document.getElementById('randaInput').value = document.getElementById('funnyText').innerText;
+            } else if (pin !== null) {
+                alert("الرمز السري غير صحيح!");
+            }
+        }
+
+        function saveRandaComment() {
+            const comment = document.getElementById('randaInput').value.trim();
+            if (!comment) return;
+
+            const cleanKeyForFirebase = normalizeText(currentSearchName).replace(/[.#$\[\]]/g, '');
+            database.ref('randa_comments/' + cleanKeyForFirebase).set(comment).then(() => {
+                alert("تم حفظ تحليل رندة بنجاح وستظهر للجميع الآن!");
+                document.getElementById('funnyText').innerText = comment;
+                document.getElementById('editArea').style.display = 'none';
+            }).catch(err => {
+                alert("خطأ بالحفظ: تأكد من تفعيل Realtime Database بـ Firebase");
+            });
+        }
+    </script>
+</body>
+</html>
