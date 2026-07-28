@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موسوعة الأسماء | بلمسة رندة زربا</title>
+    
+    <!-- إعدادات PWA والتطبيق -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e1065">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,11 +24,37 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 15px;
+            padding: 20px 15px;
             min-height: 100vh;
             margin: 0;
             background: radial-gradient(circle at top, #2e1065 0%, #0d1117 100%);
         }
+
+        /* شريط تثبيت التطبيق */
+        .install-pwa-banner {
+            display: none;
+            background: linear-gradient(135deg, #d946ef, #8b5cf6);
+            color: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(217, 70, 239, 0.4);
+        }
+        .install-pwa-btn {
+            background: white;
+            color: #a855f7;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
         .header-tag {
             background: rgba(217, 70, 239, 0.15);
             color: #f0abfc;
@@ -46,7 +78,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* التبويبات الرئيسيّة */
         .tabs {
             display: flex;
             gap: 10px;
@@ -73,7 +104,6 @@
             box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
         }
 
-        /* أشرطة البحث والمدخلات */
         .section-box {
             width: 100%;
             max-width: 500px;
@@ -136,7 +166,6 @@
             font-size: 1.1rem;
         }
 
-        /* البطاقات */
         .card {
             background: rgba(22, 27, 34, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -171,7 +200,6 @@
         }
         .randa-desc { color: #ffffff; line-height: 1.7; font-size: 1rem; font-weight: 500; }
 
-        /* شريط التوافق المئوي */
         .score-circle {
             font-size: 3rem;
             font-weight: 900;
@@ -181,7 +209,6 @@
             text-shadow: 0 0 20px rgba(244, 114, 182, 0.4);
         }
 
-        /* أزرار التحكم والتحميل */
         .action-btns {
             display: flex;
             gap: 10px;
@@ -248,24 +275,26 @@
         }
     </style>
 
-    <!-- HTML2Canvas لتوليد الصور -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
+    <!-- شريط تنزيل التطبيق -->
+    <div class="install-pwa-banner" id="pwaBanner">
+        <span><i class="fa-solid fa-mobile-screen-button"></i> تنزيل التطبيق على الجوال</span>
+        <button class="install-pwa-btn" onclick="installApp()">تثبيت الأن</button>
+    </div>
+
     <div class="header-tag"><i class="fa-solid fa-crown"></i> الإصدار الخاص المعتمد</div>
     <h1>موسوعة الأسماء <span>بلمسة رندة زربا</span> ✨</h1>
 
-    <!-- تبويبات التنقل -->
     <div class="tabs">
         <button class="tab-btn active" id="tab1" onclick="switchTab('single')"><i class="fa-solid fa-magnifying-glass"></i> كشف اسم</button>
         <button class="tab-btn" id="tab2" onclick="switchTab('compat')"><i class="fa-solid fa-heart"></i> كاشف التوافق</button>
     </div>
 
-    <!-- قسم كشف الاسم الفردي -->
     <div class="section-box" id="singleSection">
         <div class="search-box">
             <input type="text" id="nameInput" class="input-style" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، رندة)..." style="border:none; background:transparent;">
@@ -273,7 +302,6 @@
         </div>
     </div>
 
-    <!-- قسم كاشف التوافق -->
     <div class="section-box" id="compatSection" style="display: none;">
         <div class="compat-inputs">
             <input type="text" id="firstName" class="input-style" placeholder="الاسم الأول (مثال: رندة)...">
@@ -284,7 +312,6 @@
 
     <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري استحضار التحليل واللمسة المخصصة...</div>
 
-    <!-- بطاقة العرض الرئيسية -->
     <div class="card" id="card">
         <div class="title" id="nameTitle">-</div>
         <div class="badge" id="nameOrigin">-</div>
@@ -314,6 +341,25 @@
     </div>
 
     <script>
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaBanner').style.display = 'flex';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('pwaBanner').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyAD9NWqGXT1Iewyc8947i6_OJ_MXnPp0EH4",
             authDomain: "randa-names.firebaseapp.com",
@@ -364,7 +410,6 @@
             return str.replace(/[أإآ]/g, 'ا').replace(/ة$/g, 'ه').replace(/[\u064B-\u0652]/g, '').trim();
         }
 
-        /* حساب الجُمل الأبجدي لحساب التوافق */
         function getAbjadValue(str) {
             const abjad = {
                 'ا':1, 'ب':2, 'ج':3, 'د':4, 'ه':5, 'و':6, 'ز':7, 'ح':8, 'ط':9,
@@ -394,10 +439,9 @@
             card.style.display = 'none';
             loader.style.display = 'block';
 
-            // حساب التوافق رياضياً بناءً على الجمل والنسبة المئوية المحصورة بين 70% و 99%
             const val1 = getAbjadValue(name1);
             const val2 = getAbjadValue(name2);
-            let score = ((val1 + val2) % 30) + 70; // يعطي دايماً نتيجة بين 70% و 99%
+            let score = ((val1 + val2) % 30) + 70;
 
             setTimeout(() => {
                 document.getElementById('nameTitle').innerText = `${name1} ❤️ ${name2}`;
@@ -468,7 +512,6 @@
             });
         }
 
-        /* توليد وتحميل صورة الإهداء */
         function downloadCard() {
             const card = document.getElementById('card');
             const actionBtns = document.getElementById('actionBtns');
