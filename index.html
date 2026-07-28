@@ -133,17 +133,39 @@
             flex-direction: column;
             align-items: center;
         }
+
+        /* تعديل حقل البحث لتناسق الجوال والشاشات المختلفة */
         .search-box {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 20px;
             width: 100%;
-            background: rgba(22, 27, 34, 0.8);
-            padding: 8px;
+            background: rgba(22, 27, 34, 0.85);
+            padding: 6px 6px 6px 14px;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(10px);
         }
+        .search-box input {
+            flex: 1;
+            min-width: 0;
+            border: none !important;
+            background: transparent !important;
+            outline: none;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            padding: 8px 0;
+        }
+        .search-box button {
+            white-space: nowrap;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
         .compat-inputs {
             display: flex;
             flex-direction: column;
@@ -325,8 +347,8 @@
 
     <div class="section-box" id="singleSection">
         <div class="search-box">
-            <input type="text" id="nameInput" class="input-style" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، رندة)..." style="border:none; background:transparent;">
-            <button class="btn-main" style="width:auto;" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
+            <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، رندة)...">
+            <button class="btn-main" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
         </div>
     </div>
 
