@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موسوعة الأسماء | بلمسة رندة زربا</title>
+    <title>موسوعة الأسماء وطاقة الساجو الكورية | بلمسة رندة زربا</title>
     
     <!-- PWA Manifest & Theme -->
     <link rel="manifest" href="manifest.json">
@@ -86,7 +86,7 @@
         h1 { 
             color: #ffffff; 
             margin: 0 0 20px 0; 
-            font-size: 2rem;
+            font-size: 1.8rem;
             text-align: center;
             font-weight: 900;
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
@@ -97,9 +97,11 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* أزرار التبويب (كشف اسم / كاشف التوافق) */
+        /* أزرار التبويبات المتعددة */
         .tab-switch {
             display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
             background: rgba(22, 27, 34, 0.9);
             border-radius: 16px;
             padding: 5px;
@@ -109,16 +111,17 @@
             max-width: 500px;
         }
         .tab-btn {
-            flex: 1;
-            padding: 10px;
+            flex: 1 1 45%;
+            padding: 10px 6px;
             border: none;
             background: transparent;
             color: #8b949e;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             border-radius: 12px;
             cursor: pointer;
             font-family: inherit;
+            text-align: center;
         }
         .tab-btn.active {
             background: linear-gradient(135deg, #d946ef, #8b5cf6);
@@ -133,29 +136,39 @@
             width: 100%;
             max-width: 500px;
             background: rgba(22, 27, 34, 0.9);
-            padding: 8px;
+            padding: 12px;
             border-radius: 16px;
             border: 1px solid rgba(217, 70, 239, 0.3);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
-        }
-        .search-box.double-input {
             flex-direction: column;
         }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-size: 0.85rem;
+            color: #f0abfc;
+            font-weight: bold;
+        }
         input {
-            flex: 1;
+            width: 100%;
             padding: 12px 16px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(13, 17, 23, 0.8);
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
             font-family: inherit;
         }
         input:focus { border-color: #d946ef; }
         input::placeholder { color: #8b949e; }
+        
         button.btn-search {
+            width: 100%;
             padding: 12px 24px;
             border-radius: 12px;
             border: none;
@@ -165,7 +178,7 @@
             font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
-            white-space: nowrap;
+            margin-top: 6px;
         }
         button.btn-search:hover {
             transform: translateY(-2px);
@@ -178,6 +191,7 @@
             margin-bottom: 20px;
             font-weight: bold;
             font-size: 1.1rem;
+            text-align: center;
         }
 
         /* البطاقة الرئيسية */
@@ -198,9 +212,9 @@
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .title { color: #f472b6; font-size: 2rem; font-weight: 900; margin-bottom: 4px; }
+        .title { color: #f472b6; font-size: 1.8rem; font-weight: 900; margin-bottom: 4px; }
         .badge { color: #a78bfa; font-size: 0.9rem; margin-bottom: 16px; font-weight: bold; }
-        .desc { color: #e2e8f0; line-height: 1.8; font-size: 1rem; margin-bottom: 18px; }
+        .desc { color: #e2e8f0; line-height: 1.8; font-size: 0.98rem; margin-bottom: 18px; }
         
         .randa-box {
             background: linear-gradient(135deg, rgba(217, 70, 239, 0.12), rgba(139, 92, 246, 0.12));
@@ -301,25 +315,65 @@
     </div>
 
     <div class="header-tag"><i class="fa-solid fa-crown"></i> الإصدار الخاص المعتمد</div>
-    <h1>موسوعة الأسماء <span>بلمسة رندة زربا</span> ✨</h1>
+    <h1>موسوعة الأسماء <span>وطاقة الساجو الكورية</span> ✨</h1>
 
-    <!-- تبويبات كشف اسم / كاشف التوافق -->
+    <!-- تبويبات النظام -->
     <div class="tab-switch">
         <button class="tab-btn active" id="tabSingle" onclick="switchTab('single')"><i class="fa-solid fa-magnifying-glass"></i> كشف اسم</button>
         <button class="tab-btn" id="tabDouble" onclick="switchTab('double')"><i class="fa-solid fa-heart"></i> كاشف التوافق</button>
+        <button class="tab-btn" id="tabSaju" onclick="switchTab('saju')"><i class="fa-solid fa-yin-yang"></i> طاقة الساجو الكورية</button>
+        <button class="tab-btn" id="tabGunghap" onclick="switchTab('gunghap')"><i class="fa-solid fa-hand-holding-heart"></i> التوافق الكوري Gunghap</button>
     </div>
 
-    <!-- صندوق البحث عن اسم فردي -->
+    <!-- 1. صندوق كشف اسم فردي -->
     <div class="search-box" id="singleBox">
-        <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، نوال)..." onkeyup="if(event.key === 'Enter') searchName()">
-        <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف</button>
+        <div class="input-group">
+            <label>الاسم المراد البحث عنه:</label>
+            <input type="text" id="nameInput" placeholder="اكتب الاسم هنا (مثال: هاشم، وعد، نوال)..." onkeyup="if(event.key === 'Enter') searchName()">
+        </div>
+        <button class="btn-search" onclick="searchName()"><i class="fa-solid fa-wand-magic-sparkles"></i> كشف المعنى</button>
     </div>
 
-    <!-- صندوق كاشف التوافق -->
-    <div class="search-box double-input" id="doubleBox" style="display: none;">
-        <input type="text" id="firstNameInput" placeholder="الاسم الأول (مثال: محمد)...">
-        <input type="text" id="secondNameInput" placeholder="الاسم الثاني (مثال: رندة)..." onkeyup="if(event.key === 'Enter') checkCompatibility()">
+    <!-- 2. صندوق كاشف التوافق العادي -->
+    <div class="search-box" id="doubleBox" style="display: none;">
+        <div class="input-group">
+            <label>الاسم الأول:</label>
+            <input type="text" id="firstNameInput" placeholder="مثال: محمد">
+        </div>
+        <div class="input-group">
+            <label>الاسم الثاني:</label>
+            <input type="text" id="secondNameInput" placeholder="مثال: رندة" onkeyup="if(event.key === 'Enter') checkCompatibility()">
+        </div>
         <button class="btn-search" onclick="checkCompatibility()"><i class="fa-solid fa-heart-circle-check"></i> فحص التوافق</button>
+    </div>
+
+    <!-- 3. صندوق طاقة الساجو الكورية (اسم + تاريخ ميلاد) -->
+    <div class="search-box" id="sajuBox" style="display: none;">
+        <div class="input-group">
+            <label>الاسم الشخصي:</label>
+            <input type="text" id="sajuNameInput" placeholder="أدخل اسمك الكريم...">
+        </div>
+        <div class="input-group">
+            <label>تاريخ الميلاد الكامل:</label>
+            <input type="date" id="sajuDateInput" lang="en-GB">
+        </div>
+        <button class="btn-search" onclick="calculateSaju()"><i class="fa-solid fa-fire-flame-curved"></i> استخراج طاقة العناصر الخمسة</button>
+    </div>
+
+    <!-- 4. صندوق التوافق الكوري Gunghap (اسمين + تاريخين ميلاد) -->
+    <div class="search-box" id="gunghapBox" style="display: none;">
+        <div class="input-group">
+            <label>اسم وشبكة ميلاد الطرف الأول:</label>
+            <input type="text" id="gName1" placeholder="اسم الطرف الأول...">
+            <input type="date" id="gDate1" lang="en-GB">
+        </div>
+        <hr style="border: 0.5px solid rgba(255,255,255,0.1); width: 100%;">
+        <div class="input-group">
+            <label>اسم وشبكة ميلاد الطرف الثاني:</label>
+            <input type="text" id="gName2" placeholder="اسم الطرف الثاني...">
+            <input type="date" id="gDate2" lang="en-GB">
+        </div>
+        <button class="btn-search" onclick="calculateGunghap()"><i class="fa-solid fa-dna"></i> تحليل التوافق الكوري الشامل</button>
     </div>
 
     <div class="loader" id="loader"><i class="fa-solid fa-spinner fa-spin"></i> جاري استحضار التحليل واللمسة المخصصة...</div>
@@ -364,7 +418,6 @@
         let currentSearchName = "";
         let currentMode = "single";
 
-        // قاموس أولي لمعاني الأسماء
         const defaultMeanings = {
             "هاشم": "اسم علم عربي مذكر، يعني الكاسر أو الهشام الذي يكسر الخبز ليطعم غيره، وهو يدل على الكرم الشديد والجود والشهامة.",
             "وعد": "اسم علم عربي مؤنث، يعني الالتزام والعهد والوفاء بالذمة والصراحة في التعامل والعهد بالخير.",
@@ -389,24 +442,33 @@
             return txt.value;
         }
 
-        // --- التبديل بين كشف اسم وكاشف التوافق ---
+        // --- التبديل بين التبويبات الأربعة ---
         function switchTab(mode) {
             currentMode = mode;
             document.getElementById('card').style.display = 'none';
+            
+            const tabs = ['tabSingle', 'tabDouble', 'tabSaju', 'tabGunghap'];
+            const boxes = ['singleBox', 'doubleBox', 'sajuBox', 'gunghapBox'];
+
+            tabs.forEach(t => document.getElementById(t).classList.remove('active'));
+            boxes.forEach(b => document.getElementById(b).style.display = 'none');
+
             if (mode === 'single') {
                 document.getElementById('tabSingle').classList.add('active');
-                document.getElementById('tabDouble').classList.remove('active');
                 document.getElementById('singleBox').style.display = 'flex';
-                document.getElementById('doubleBox').style.display = 'none';
-            } else {
+            } else if (mode === 'double') {
                 document.getElementById('tabDouble').classList.add('active');
-                document.getElementById('tabSingle').classList.remove('active');
                 document.getElementById('doubleBox').style.display = 'flex';
-                document.getElementById('singleBox').style.display = 'none';
+            } else if (mode === 'saju') {
+                document.getElementById('tabSaju').classList.add('active');
+                document.getElementById('sajuBox').style.display = 'flex';
+            } else if (mode === 'gunghap') {
+                document.getElementById('tabGunghap').classList.add('active');
+                document.getElementById('gunghapBox').style.display = 'flex';
             }
         }
 
-        // --- البحث المباشر وتصفية الشخصيات والفنانين ---
+        // --- 1. البحث المباشر وتصفية الشخصيات ---
         async function searchName() {
             const rawInput = document.getElementById('nameInput').value.trim();
             const card = document.getElementById('card');
@@ -432,7 +494,6 @@
                 document.getElementById('nameMeaning').innerText = defaultMeanings[cleanedInput] || defaultMeanings[rawInput];
             } else {
                 try {
-                    // البحث بنمط ويكيبيديا المعتمد لأسماء العلم
                     const searchQuery = `"${rawInput} (اسم)" OR ("${rawInput}" "اسم علم") OR ("${rawInput}" "اسم شخصي")`;
                     const searchUrl = `https://ar.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&format=json&origin=*`;
                     
@@ -440,27 +501,13 @@
                     const data = await response.json();
 
                     let foundValidMeaning = false;
-
-                    // كلمات استبعاد السياسيين والفنانين والسير الذاتية
-                    const bioExcludeKeywords = [
-                        'سياسي', 'لاعب', 'ممثل', 'مغني', 'مطرب', 'قائد', 'فنان', 'رئيس', 'ملك', 
-                        'أمير', 'ولد', 'توفي', 'سيرة', 'ضابط', 'كاتب', 'شاعر', 'وزير', 'سفير', 
-                        'جنرال', 'حاكم', 'ناشط', 'مخرج', 'بطولة', 'منتخب', 'فريق', 'مسلسل', 'فيلم'
-                    ];
+                    const bioExcludeKeywords = ['سياسي', 'لاعب', 'ممثل', 'مغني', 'مطرب', 'قائد', 'فنان', 'رئيس', 'ملك', 'أمير', 'ولد', 'توفي', 'سيرة', 'ضابط', 'كاتب', 'شاعر', 'وزير', 'سفير', 'جنرال', 'حاكم', 'ناشط', 'مخرج', 'بطولة', 'منتخب', 'فريق', 'مسلسل', 'فيلم'];
 
                     if (data.query && data.query.search.length > 0) {
-                        // مطابقة المقال الذي يخص اسم العلم تحديداً
                         const bestMatch = data.query.search.find(item => {
-                            const title = item.title;
-                            const snippet = item.snippet;
-                            const fullContent = (title + " " + snippet).toLowerCase();
-                            
-                            // استبعاد السير الذاتية
+                            const fullContent = (item.title + " " + item.snippet).toLowerCase();
                             const isBio = bioExcludeKeywords.some(word => fullContent.includes(word));
-                            
-                            // الشرط الأساسي: العنوان فيه (اسم) أو الوصف فيه عبارة (اسم علم) أو (اسم شخصي)
-                            const isNameArticle = title.includes("(اسم)") || snippet.includes("اسم علم") || snippet.includes("اسم شخصي");
-
+                            const isNameArticle = item.title.includes("(اسم)") || item.snippet.includes("اسم علم") || item.snippet.includes("اسم شخصي");
                             return isNameArticle && !isBio;
                         });
 
@@ -473,7 +520,6 @@
                         }
                     }
 
-                    // نص احتياطي راقي في حال لم يتوفر مقال للاسم بويكيبيديا
                     if (!foundValidMeaning) {
                         document.getElementById('nameTitle').innerText = rawInput;
                         document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
@@ -503,7 +549,7 @@
             });
         }
 
-        // --- كاشف التوافق بين شخصين ---
+        // --- 2. كاشف التوافق البسيط ---
         function checkCompatibility() {
             const name1 = document.getElementById('firstNameInput').value.trim();
             const name2 = document.getElementById('secondNameInput').value.trim();
@@ -514,7 +560,7 @@
 
             setTimeout(() => {
                 const totalLength = name1.length + name2.length;
-                const score = 80 + (totalLength * 3) % 21; // نتيجة بين 80% و 100%
+                const score = 80 + (totalLength * 3) % 21;
 
                 document.getElementById('nameTitle').innerText = `${name1} ❤️ ${name2}`;
                 document.getElementById('nameOrigin').innerText = `نسبة التوافق الروحي: ${score}%`;
@@ -524,6 +570,75 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('card').style.display = 'block';
             }, 600);
+        }
+
+        // --- 3. حساب طاقة الساجو الكورية (العناصر الخمسة) ---
+        function getSajuElement(year) {
+            const lastDigit = year % 10;
+            if (lastDigit === 0 || lastDigit === 1) return { name: "عنصر المعدن (Metal - 金)", color: "الذهبي والأبيض", traits: "شخصية قوية، منظمة، حاسمة، مخلصة جداً، ومباشرة في القرارات.", symbol: "⚔️" };
+            if (lastDigit === 2 || lastDigit === 3) return { name: "عنصر الماء (Water - 水)", color: "الأزرق والكحلي والأسود", traits: "شخصية حكيمة، مرنة كالماء، هادئة، وعميقة التفكير مع حس عاطفي راقي.", symbol: "🌊" };
+            if (lastDigit === 4 || lastDigit === 5) return { name: "عنصر الخشب (Wood - 木)", color: "الأخضر والزيتي", traits: "شخصية مبدعة، متجددة، تحب النمو والتطور المستمر، ومتفائلة دائماً.", symbol: "🌿" };
+            if (lastDigit === 6 || lastDigit === 7) return { name: "عنصر النار (Fire - 火)", color: "الأحمر والوردي والأرجواني", traits: "شخصية شغوفة، مليئة بالحيوية والكاريزما، قيادية، ولديها حضور ملفت.", symbol: "🔥" };
+            return { name: "عنصر التراب (Earth - 土)", color: "الأصفر والبني والبيج", traits: "شخصية مستقرة، صبورة، موثوقة جداً، عملية، وتحفظ الأسرار بعناية.", symbol: "⛰️" };
+        }
+
+        function calculateSaju() {
+            const name = document.getElementById('sajuNameInput').value.trim();
+            const dateStr = document.getElementById('sajuDateInput').value;
+
+            if (!name || !dateStr) {
+                alert("الرجاء إدخال الاسم وتاريخ الميلاد كاملاً!");
+                return;
+            }
+
+            document.getElementById('card').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+
+            setTimeout(() => {
+                const birthYear = new Date(dateStr).getFullYear();
+                const elem = getSajuElement(birthYear);
+
+                document.getElementById('nameTitle').innerText = `${elem.symbol} ${name} (${elem.name})`;
+                document.getElementById('nameOrigin').innerText = `الرمز الكوري المعتمد وطاقة سنة ${birthYear}`;
+                document.getElementById('nameMeaning').innerText = `طبيعة الطاقة: ${elem.traits}\n\n🎨 ألوان الحظ الخاصة بطاقتك: ${elem.color}.`;
+                document.getElementById('funnyText').innerText = `تحليل رندة للساجو: ${name} طاقته الكورية قوية جداً! عنده هيبة وكاريزما، بس لما يعصب بصير بدو كاسة قهوة تركية ليروق! ☕✨`;
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('card').style.display = 'block';
+            }, 700);
+        }
+
+        // --- 4. فحص التوافق الكوري Gunghap ---
+        function calculateGunghap() {
+            const name1 = document.getElementById('gName1').value.trim();
+            const date1 = document.getElementById('gDate1').value;
+            const name2 = document.getElementById('gName2').value.trim();
+            const date2 = document.getElementById('gDate2').value;
+
+            if (!name1 || !date1 || !name2 || !date2) {
+                alert("يرجى إدخال أسماء وتواريخ ميلاد الطرفين للتحليل الشامل!");
+                return;
+            }
+
+            document.getElementById('card').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+
+            setTimeout(() => {
+                const y1 = new Date(date1).getFullYear();
+                const y2 = new Date(date2).getFullYear();
+                const e1 = getSajuElement(y1);
+                const e2 = getSajuElement(y2);
+
+                const score = 82 + ((y1 + y2 + name1.length + name2.length) % 18);
+
+                document.getElementById('nameTitle').innerText = `${name1} 💞 ${name2}`;
+                document.getElementById('nameOrigin').innerText = `تحليل الجونغ هاب (Gunghap): نسبة الانسجام ${score}%`;
+                document.getElementById('nameMeaning').innerText = `🔮 التناغم الكوري بين العناصر:\n- طاقة ${name1}: ${e1.name}\n- طاقة ${name2}: ${e2.name}\n\nالعلاقة بينهما قائمة على التبادل الإيجابي والدعم النفسي، ويشكلان ثنائياً متوازناً وقوياً جداً!`;
+                document.getElementById('funnyText').innerText = `تحليل رندة للجونغ هاب: كيمياء رهيبة بين ${name1} و ${name2}! العصبية بتختفي بسرعة والضحك بيغلب على طبعهم سوا! 💫`;
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('card').style.display = 'block';
+            }, 800);
         }
 
         // --- لوحة التحكم والتعديل بكلمة السر ---
@@ -541,7 +656,7 @@
             const comment = document.getElementById('randaInput').value.trim();
             if (!comment) return;
 
-            const cleanKeyForFirebase = normalizeText(currentSearchName).replace(/[.#$\[\]]/g, '');
+            const cleanKeyForFirebase = normalizeText(currentSearchName || "general").replace(/[.#$\[\]]/g, '');
             database.ref('randa_comments/' + cleanKeyForFirebase).set(comment).then(() => {
                 alert("تم اعتماد لمسة رندة زربا بنجاح وستظهر للجميع الآن!");
                 document.getElementById('funnyText').innerText = comment;
