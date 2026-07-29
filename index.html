@@ -406,7 +406,7 @@
             }
         }
 
-        // --- البحث المباشر وتصفية السياسيين ---
+        // --- البحث المباشر وتصفية الشخصيات والفنانين ---
         async function searchName() {
             const rawInput = document.getElementById('nameInput').value.trim();
             const card = document.getElementById('card');
@@ -432,33 +432,52 @@
                 document.getElementById('nameMeaning').innerText = defaultMeanings[cleanedInput] || defaultMeanings[rawInput];
             } else {
                 try {
-                    const searchQuery = `"${rawInput}" "اسم علم" OR "اسم شخصي" -بلفور -لاعب -سياسي`;
+                    // البحث بنمط ويكيبيديا المعتمد لأسماء العلم
+                    const searchQuery = `"${rawInput} (اسم)" OR ("${rawInput}" "اسم علم") OR ("${rawInput}" "اسم شخصي")`;
                     const searchUrl = `https://ar.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&format=json&origin=*`;
+                    
                     const response = await fetch(searchUrl);
                     const data = await response.json();
 
                     let foundValidMeaning = false;
 
+                    // كلمات استبعاد السياسيين والفنانين والسير الذاتية
+                    const bioExcludeKeywords = [
+                        'سياسي', 'لاعب', 'ممثل', 'مغني', 'مطرب', 'قائد', 'فنان', 'رئيس', 'ملك', 
+                        'أمير', 'ولد', 'توفي', 'سيرة', 'ضابط', 'كاتب', 'شاعر', 'وزير', 'سفير', 
+                        'جنرال', 'حاكم', 'ناشط', 'مخرج', 'بطولة', 'منتخب', 'فريق', 'مسلسل', 'فيلم'
+                    ];
+
                     if (data.query && data.query.search.length > 0) {
-                        const bestMatch = data.query.search.find(item => 
-                            !item.title.includes("بلفور") && 
-                            !item.title.includes("لاعب") && 
-                            !item.snippet.includes("سياسي")
-                        );
+                        // مطابقة المقال الذي يخص اسم العلم تحديداً
+                        const bestMatch = data.query.search.find(item => {
+                            const title = item.title;
+                            const snippet = item.snippet;
+                            const fullContent = (title + " " + snippet).toLowerCase();
+                            
+                            // استبعاد السير الذاتية
+                            const isBio = bioExcludeKeywords.some(word => fullContent.includes(word));
+                            
+                            // الشرط الأساسي: العنوان فيه (اسم) أو الوصف فيه عبارة (اسم علم) أو (اسم شخصي)
+                            const isNameArticle = title.includes("(اسم)") || snippet.includes("اسم علم") || snippet.includes("اسم شخصي");
+
+                            return isNameArticle && !isBio;
+                        });
 
                         if (bestMatch) {
                             let snippet = bestMatch.snippet.replace(/<\/?[^>]+(>|$)/g, "");
                             document.getElementById('nameTitle').innerText = rawInput;
-                            document.getElementById('nameOrigin').innerText = "المصدر: الموسوعة المعتمدة";
+                            document.getElementById('nameOrigin').innerText = "المصدر: موسوعة ويكيبيديا (معاني الأسماء)";
                             document.getElementById('nameMeaning').innerText = decodeHTML(snippet) + "...";
                             foundValidMeaning = true;
                         }
                     }
 
+                    // نص احتياطي راقي في حال لم يتوفر مقال للاسم بويكيبيديا
                     if (!foundValidMeaning) {
                         document.getElementById('nameTitle').innerText = rawInput;
                         document.getElementById('nameOrigin').innerText = "أصل عربي / معتمد";
-                        document.getElementById('nameMeaning').innerText = "اسم علم عربي أصيل يحمل معاني النبل والتألق والصفات الحميدة.";
+                        document.getElementById('nameMeaning').innerText = "اسم علم جميل يحمل معاني الأصالة والرفعة والصفات الطيبة.";
                     }
                 } catch (e) {
                     document.getElementById('nameTitle').innerText = rawInput;
@@ -510,7 +529,7 @@
         // --- لوحة التحكم والتعديل بكلمة السر ---
         function openRandaEditor() {
             const pin = prompt("أدخلي الرمز السري الخاص بـ رندة زربا:");
-            if (pin === "2012") {
+            if (pin === "1822012") {
                 document.getElementById('editArea').style.display = 'block';
                 document.getElementById('randaInput').value = document.getElementById('funnyText').innerText;
             } else if (pin !== null) {
